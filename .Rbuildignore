@@ -1,2 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.travis\.yml$
+^/\.gitattributes$
+^cran-comments.md$
+^NEWS$
+^README\.Rmd$
+^docs$
