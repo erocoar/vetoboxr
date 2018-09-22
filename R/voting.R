@@ -1,7 +1,9 @@
-library(CVXR)
+# library(CVXR)
 
+#' @importFrom CVXR get_problem_data Problem Minimize
+#' @importFrom ECOSolveR ECOS_csolve
 solve_vote <- function(prob) {
-  prob_data <- get_problem_data(prob, solver = "ECOS")
+  prob_data <- CVXR::get_problem_data(prob, solver = "ECOS")
   ECOSolveR::ECOS_csolve(c = prob_data[["c"]],
                          G = prob_data[["G"]],
                          h = prob_data[["h"]],
@@ -10,29 +12,51 @@ solve_vote <- function(prob) {
                          b = prob_data[["b"]])$x[seq(2)]
 }
 
-Vote <- function(sq, voterlist, iter) {
-  
-  v_roles <- sapply(voterlist, function(object) object@role)
-  v_pos   <- sapply(voterlist, function(object) object@position)
-  
-  as_idx <- which(v_roles == "AS")
-  veto_idx <- which(v_roles == "Veto")
-  normal_idx <- setdiff(seq_along(v_roles), c(veto_idx, as_idx))
-  
+#' Vote.
+#'
+#' Executes the spatial model of voting, solving the `Formula`
+#' constrained optimization problem.
+#'
+#' @param formula A formula with SQ on LHS and Voters on RHS.
+#' @param iter Number of runs.
+#'
+#' @importFrom CVXR Variable Minimize p_norm Problem
+#' @export
+#'
+Vote <- function(formula, iter) {
+  sq <- eval(formula[[2]])
+  voters <- eval(formula[[3]])
+  voter_names <- labels(terms(formula))
+  dimension = sq@dimension
   sq <- sq@position
-  
-  v_sq <- matrix(sq, nrow = iter + 1, ncol = length(sq), byrow = TRUE)
-  
+  roles <- voters@role
+
+  if (dimension != voters@dimension) {
+    stop("SQ and Voter objects must have equal dimensions.")
+  }
+
+  if (!"AS" %in% roles || sum(roles == "AS") > 1) {
+    stop("There must be exactly one Agenda Setter.")
+  }
+
+  as_idx <- which(roles == "AS")
+  veto_idx <- which(roles == "Veto")
+  normal_idx <- which(roles == "Normal")
+
+  v_sq <- matrix(sq, nrow = iter + 1, ncol = dimension, byrow = TRUE)
+  v_pos <- voters@position
+
   for (i in seq(1, iter)) {
-   new_sq <- Variable(2, 1)
-   obj <- Minimize(p_norm(v_pos[, as_idx] - new_sq))
-   
+   new_sq <- CVXR::Variable(dimension, 1)
+   asd <<- list(v_pos[, as_idx], new_sq)
+   obj <- CVXR::Minimize(CVXR::p_norm(v_pos[, as_idx] - new_sq))
+
    coalitions <- determine_coalitions(as_idx, veto_idx, normal_idx)
-   
+
    veto_constraints <- lapply(veto_idx, function(x) {
      p_norm(new_sq - v_pos[, x]) <= p_norm(v_sq[i, ] - v_pos[, x])
    })
-   
+
    if (!is.null(coalitions)) {
      intermediate_sqs <- matrix(0, nrow = ncol(coalitions), ncol = 2)
      for (j in seq(1, ncol(coalitions))) {
@@ -40,10 +64,10 @@ Vote <- function(sq, voterlist, iter) {
         lapply(coalitions[, j], function(x) {
           p_norm(new_sq - v_pos[, x]) <= p_norm(v_sq[i, ] - v_pos[, x])
         }))
-       
-       intermediate_sqs[j, ] <- solve_vote(Problem(obj, constraints))
+
+       intermediate_sqs[j, ] <- solve_vote(CVXR::Problem(obj, constraints))
      }
-     
+
      dists <- dist(rbind(v_pos[, as_idx], intermediate_sqs))
      dists <- dists[seq(1, nrow(intermediate_sqs))]
      v_sq[i + 1, ] <- intermediate_sqs[which.min(dists), ]
@@ -55,5 +79,5 @@ Vote <- function(sq, voterlist, iter) {
 }
 
 
-Vote(SQ(c(1,2)), voterlist = list(Voter(c(7,5), "AS"), Voter(c(3,4), "Veto"), Voter(c(1,1), ""), 
-                                  Voter(c(5, 9), "")), iter = 3)
+
+

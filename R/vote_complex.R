@@ -1,12 +1,13 @@
 # TODO: Lazyeval to get voter names here for `voters`
 .Voters <- setClass("Voters",
-  contains = "Position"
+  contains = "Voter"
 )
 
 setMethod("initialize", "Voters",
-  function(.Object, position, dimension) {
+  function(.Object, position, dimension, role) {
     .Object@position <- position
     .Object@dimension <- dimension
+    .Object@role <- role
     .Object
   }
 )
@@ -16,7 +17,8 @@ setMethod("+", signature = signature(e1 = "Voter", e2 = "Voter"),
     check_positions(e1, e2)
     .Voters(
       position = cbind(e1@position, e2@position),
-      dimension = e1@dimension
+      dimension = e1@dimension,
+      role = c(e1@role, e2@role)
     )
   })
 
@@ -25,7 +27,8 @@ setMethod("+", signature = signature(e1 = "Voters", e2 = "Voter"),
     check_positions(e1, e2)
     .Voters(
       position = cbind(e1@position, e2@position),
-      dimension = e1@dimension
+      dimension = e1@dimension,
+      role = c(e1@role, e2@role)
     )
   })
 
@@ -34,7 +37,8 @@ setMethod("+", signature = signature(e1 = "Voter", e2 = "Voters"),
     check_positions(e1, e2)
     .Voters(
       position = cbind(e1@position, e2@position),
-      dimension = e1@dimension
+      dimension = e1@dimension,
+      role = c(e1@role, e2@role)
     )
   })
 
