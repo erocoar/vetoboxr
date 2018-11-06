@@ -52,8 +52,7 @@ setMethod("initialize", "Voter", function(.Object, position, role) {
 #' @param role
 #' @export
 Voter <- function(position, role = "Normal") {
-  v <- methods::new("Voter", position = position, role = role)
-  v
+  methods::new("Voter", position = position, role = role)
 }
 
 
