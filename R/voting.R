@@ -144,7 +144,7 @@ Vote <- function(
   winsets <- get_winset(out, seq(1, iter))
 
   out$winsets <- winsets
-  # out$winset_area <-
+  out$winset_area <- sapply(winsets, function(x) x@polygons[[1]]@area)
   out
 }
 
