@@ -28,6 +28,7 @@ Vote <- function(
   drift = NULL,
   vibration = NULL,
   iter = 1,
+  keep_winset_objects = TRUE,
   ...) {
   function_call <- match.call()
   sq <- eval(formula[[2]])
@@ -43,7 +44,7 @@ Vote <- function(
 
   # checks
   stopifnot(dimension == voters@dimension)
-  stopifnot("AS" %in%  roles && (sum(roles == "AS") == 1))
+  stopifnot("AS" %in% voter_roles && (sum(voter_roles == "AS") == 1))
 
   # initialize arrays
   status_quo <- matrix(0, ncol = dimension, nrow = iter + 1)
@@ -53,18 +54,19 @@ Vote <- function(
   voter_position <- voter_array@position
   voter_radii <- matrix(0, ncol = voter_count, nrow = iter)
 
-  dimension_distance <- matrix(0, ncol = dimension, nrow = iter)
-  total_distance <- matrix(0, ncol = iter, nrow = 1)
+  # general role idx to create role indices
+  role_idx <-  seq(1, voter_count * dimension, dimension)
 
   for (i in seq(1, iter)) {
 
     # update role indices
-    as_index <- which(voter_roles[i, ] == "AS")
+    as_index <- role_idx[which(voter_roles[i, ] == "AS")]
     as_index_full <- create_index(as_index, dimension)
-    veto_index <- which(voter_roles[i, ] == "Veto")
+    veto_index <- role_idx[which(voter_roles[i, ] == "Veto")]
     veto_index_full <- create_index(veto_index, dimension)
-    normal_index <- which(voter_roles[i, ] == "Normal")
+    normal_index <- role_idx[which(voter_roles[i, ] == "Normal")]
     normal_index_full <- create_index(normal_index, dimension)
+    ii <<- list(as_index, as_index_full, veto_index, veto_index_full)
 
     # calculate sq radius by voter
     voter_radii[i, ] <- sapply(seq(1, voter_count * dimension, dimension), function(x) {
@@ -80,7 +82,7 @@ Vote <- function(
 
     # initialize CVXR objects
     cvxr_sq <- CVXR::Variable(dimension, 1)
-    cvxr_obj <- CVXR::Minimize(CVXR::p_norm(voter_position[i, as_index] - cvxr_sq))
+    cvxr_obj <- CVXR::Minimize(CVXR::p_norm(voter_position[i, as_index_full] - cvxr_sq))
 
     veto_constraints <- lapply(veto_index, function(x) {
       p_norm(cvxr_sq - voter_position[i, c(x, x + seq(dimension - 1))]) <=
@@ -107,6 +109,16 @@ Vote <- function(
     }
   }
 
+  outcome <- status_quo[-1, , drop = FALSE]
+  status_quo <- status_quo[-nrow(status_quo), , drop = FALSE]
+
+  total_distance <- cbind("Total Distance" = apply(outcome - status_quo, 1, norm, "2"))
+  dimension_distance <- sqrt((outcome - status_quo)^2)
+  colnames(dimension_distance) = paste0("Distance Dimension ", seq(dimension))
+
+  # payoff <- voter_radii[-1, ] - voter_radii[-nrow(voter_radii), ] # TODO fix this: needs to be like sq -> outcome. so iter + 1.
+  # total_payoff <- cbind("Aggregate Payoff" = rowSums(payoff))
+
   out <- list(
     call = function_call,
     args = list(voters = voters,
@@ -121,12 +133,13 @@ Vote <- function(
     voter_roles = voter_roles,
     voter_position = voter_position,
     voter_radii = voter_radii,
-    dimension_distance = dimension_distance,#TODO
-    voter_payoff = voter_payoff, #TODO
-    total_distance = total_distance, #TODO
-    total_payoff = total_payoff, #TODO
+    dimension_distance = dimension_distance,
+    # voter_payoff = payoff,
+    total_distance = total_distance,
+    # total_payoff = total_payoff,
     status_quo = status_quo,
-    outcome = outcome #TODO
+    outcome = outcome
   )
+  out
 }
 
