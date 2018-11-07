@@ -1,6 +1,6 @@
 #'
 #' @importFrom ggpol geom_circle
-#' @importFrom ggplot2 ggplot aes geom_point geom_polygon coord_fixed scale_color_manual scale_colour_manual
+#' @importFrom ggplot2 ggplot aes geom_point geom_polygon coord_fixed scale_color_manual scale_colour_manual xlab ylab
 #' @export
 plot.Vote <- function(vote, iter = 1, ...) {
   x_idx <- seq(1, ncol(vote$voter_position), vote$dimension)
