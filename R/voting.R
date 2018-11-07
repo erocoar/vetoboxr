@@ -140,6 +140,11 @@ Vote <- function(
     status_quo = status_quo,
     outcome = outcome
   )
+
+  winsets <- get_winset(out, seq(1, iter))
+
+  out$winsets <- winsets
+  # out$winset_area <-
   out
 }
 
