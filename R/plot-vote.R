@@ -3,7 +3,7 @@
 plot.Vote <- function(Vote, iter = 1, ...) {
   x_idx <- seq(1, ncol(Vote$voter_position), Vote$dimension)
   y_idx <- x_idx + 1
-  ggplot() + 
+  ggplot() +
     geom_polygon(aes(x = Vote$winsets[[iter]]@polygons[[1]]@Polygons[[1]]@coords[, 1],
                      y = Vote$winsets[[iter]]@polygons[[1]]@Polygons[[1]]@coords[, 2]),
                  alpha = 0.4, color = "red") +
