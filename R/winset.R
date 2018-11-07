@@ -1,5 +1,3 @@
-
-library(rgeos)
 #'
 #' @importFrom sp SpatialPoints
 #' @importFrom rgeos gBuffer gIntersection
