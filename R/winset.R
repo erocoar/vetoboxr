@@ -1,6 +1,6 @@
-#'
 #' @importFrom sp SpatialPoints
 #' @importFrom rgeos gBuffer gIntersection
+#' @export
 get_winset <- function(vote, iter = 1, dimension = 2, quadsegs = 50) {
   voter_roles <- vote$voter_roles[iter, ]
   # initialize sq and voter spatial points
