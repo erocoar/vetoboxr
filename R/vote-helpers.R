@@ -2,10 +2,12 @@ create_index <- function(idx, dimension) {
   sort(c(idx, idx + seq(dimension - 1)))
 }
 
+#' @export
 setGeneric("create_voter_array", function(voters, drift, vibration, iter, ...) {
   standardGeneric("create_voter_array")
 })
 
+#' @export
 setMethod("create_voter_array",
           signature = signature(
             voters = "Voters"

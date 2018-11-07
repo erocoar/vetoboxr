@@ -2,6 +2,7 @@
 
 #' @importFrom CVXR get_problem_data Problem Minimize
 #' @importFrom ECOSolveR ECOS_csolve
+#' @export
 solve_vote <- function(prob) {
   prob_data <- CVXR::get_problem_data(prob, solver = "ECOS")
   ECOSolveR::ECOS_csolve(c = prob_data[["c"]],
@@ -22,7 +23,6 @@ solve_vote <- function(prob) {
 #'
 #' @importFrom CVXR Variable Minimize p_norm Problem
 #' @export
-#'
 Vote <- function(
   formula,
   drift = NULL,

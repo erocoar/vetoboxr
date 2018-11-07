@@ -77,10 +77,12 @@ check_positions <- function(v1, v2) {
   }
 }
 
+#' @export
 as.voters <- function (voter) {
   UseMethod("as.voters", voter)
 }
 
+#' @export
 as.voters.Voter <- function(voter) {
   .Voters(voter@position, voter@dimension, voter@role, 1)
 }
