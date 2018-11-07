@@ -4,7 +4,8 @@
 \alias{Vote}
 \title{Vote.}
 \usage{
-Vote(formula, iter)
+Vote(formula, drift = NULL, vibration = NULL, iter = 1,
+  keep_winset_objects = TRUE, ...)
 }
 \arguments{
 \item{formula}{A formula with SQ on LHS and Voters on RHS.}
