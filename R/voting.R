@@ -145,6 +145,8 @@ Vote <- function(
 
   out$winsets <- winsets
   out$winset_area <- sapply(winsets, function(x) x@polygons[[1]]@area)
+
+  class(out) <- "Vote"
   out
 }
 
