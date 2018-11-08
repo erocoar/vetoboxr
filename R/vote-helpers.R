@@ -49,3 +49,60 @@ setMethod("create_voter_array",
             rownames(voters@position) <- seq(iter)
             voters
           })
+
+
+setGeneric("create_role_array", function(voters, iter, ...) {
+  standardGeneric("create_role_array")
+})
+
+setMethod("create_role_array",
+          signature = signature(voters = "Voters"),
+          function(voters, iter, ...) {
+            roles <- voters@role
+
+            if (nrow(roles) == iter) {
+              return(roles)
+            }
+
+            n <- voters@voter_count * iter
+
+            # 1. if there are no random roles and all iters have roles, return
+            if (!any(roles == "random")) {
+              if (nrow(roles) == iter) {
+                return(roles)
+              }
+            }
+
+            # 2. if not all iters have roles, reshape
+            if (nrow(roles) != iter) {
+              roles <- matrix(roles, nrow = iter, ncol = voters@voter_count, byrow = TRUE)
+            }
+
+            # 3. per row, check for random AS or other random roles.
+            roles <- apply(roles, 1, function(x) {
+              random_idx <- which(x == "Random")
+              nonrandom_idx <- setdiff(seq_along(x), random_idx)
+
+              if (!"AS" %in% x) {
+                as_idx <- sample(random_idx, 1)
+                x[as_idx] <- "AS"
+                random_idx <- setdiff(random_idx, as_idx)
+              }
+
+              x[random_idx] <- sample(c("Veto", "Normal"), length(random_idx), replace = TRUE, ...)
+              x
+            })
+            t(roles)
+          }
+)
+
+Voters <- Voter(c(1,2)) + Veto(c(2,2)) + Voter(c(1,2), "Random") + Voter(c(2,3), "Random")
+create_role_array(Voters, 5)
+
+
+# Voters + Voter(c(1,2))
+# Voters
+# create_role_array(Voters, 2)
+
+# devtools::load_all("D:/onedrive/github/vetoboxr")
+Voters + Voter(c(1, 2))
