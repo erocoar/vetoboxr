@@ -1,6 +1,6 @@
 # Vote(SQ(c(2, 4)) ~ Voter(c(3, 4), "Veto") + Voter(c(1, 1), "Veto") + Voter(c(7, 3), "AS"), iter = 1)
 # setOldClass("data.frame")
-# setClassUnion("data.frameORvector", c("data.frame", "vector"))
+# setClassUnion("data.frameORvector", c("matrix", "vector"))
 
 Position <- setClass("Position",
   slots = c(
@@ -31,9 +31,12 @@ is.position <- function(x) {
   inherits(x, "Position")
 }
 
+
+setClassUnion("matrixORvector", c("matrix", "vector"))
+
 .Voter <- setClass("Voter",
   slots = c(
-    role = "character"
+    role = "matrixORvector"
   ),
   prototype = prototype(
     role = NA_character_
@@ -55,6 +58,21 @@ Voter <- function(position, role = "Normal") {
   methods::new("Voter", position = position, role = role)
 }
 
+#' @param position
+#' @export
+Veto <- function(position) {
+  methods::new("Voter", position = position, role = "Veto")
+}
+
+#' @param position
+#' @export
+AS <- function(position) {
+  methods::new("Voter", position = position, role = "AS")
+}
+
+RandomVoter <- function(position) {
+  methods::new("Voter", position = position, role = "Random")
+}
 
 #'
 #' The SQ class.
