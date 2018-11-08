@@ -54,8 +54,8 @@ setMethod("initialize", "Voter", function(.Object, position, role) {
 #' @param position
 #' @param role
 #' @export
-Voter <- function(position, role = "Normal") {
-  methods::new("Voter", position = position, role = role)
+Voter <- function(position, role = c("Normal", "Veto", "AS", "Random") {
+  methods::new("Voter", position = position, role = match.arg(role))
 }
 
 #' @param position
