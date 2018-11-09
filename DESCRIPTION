@@ -11,3 +11,11 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
+Collate:
+	'determine_coalitions.R'
+	'plot-vote.R'
+	'vote-classes.R'
+	'vote-complex.R'
+	'vote-helpers.R'
+	'voting.R'
+	'winset.R'
