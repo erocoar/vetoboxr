@@ -1,12 +1,8 @@
-#' @param vote
-#' @param iter
 #'
 #' @importFrom ggpol geom_circle
 #' @importFrom ggplot2 ggplot aes geom_point geom_polygon coord_fixed scale_color_manual scale_colour_manual xlab ylab ggtitle
 #' @export
 plot.Vote <- function(vote, iter = 1, ...) {
-  stopifnot(length(iter) == 1)
-
   x_idx <- seq(1, ncol(vote$voter_position), vote$dimension)
   y_idx <- x_idx + 1
   ggplot() +

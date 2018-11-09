@@ -96,8 +96,8 @@ setMethod("create_role_array",
           }
 )
 
-# Voters <- Voter(c(1,2)) + Veto(c(2,2)) + Voter(c(1,2), "Random") + Voter(c(2,3), "Random")
-# create_role_array(Voters, 5)
+Voters <- Voter(c(1,2)) + Veto(c(2,2)) + Voter(c(1,2), "Random") + Voter(c(2,3), "Random")
+create_role_array(Voters, 5)
 
 
 # Voters + Voter(c(1,2))
@@ -105,4 +105,4 @@ setMethod("create_role_array",
 # create_role_array(Voters, 2)
 
 # devtools::load_all("D:/onedrive/github/vetoboxr")
-# Voters + Voter(c(1, 2))
+Voters + Voter(c(1, 2))
