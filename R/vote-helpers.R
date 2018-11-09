@@ -1,7 +1,3 @@
-create_index <- function(idx, dimension) {
-  sort(c(idx, idx + seq(dimension - 1)))
-}
-
 #' @export
 setGeneric("create_voter_array", function(voters, drift, vibration, iter, ...) {
   standardGeneric("create_voter_array")
@@ -35,7 +31,7 @@ setMethod("create_voter_array",
                 stopifnot(nrow(vibration) == iter)
               } else if (is.function(vibration)) {
                 vibration <- matrix(vibration(prod(n * iter), ...),
-                       ncol = n, nrow = iter, byrow = TRUE)
+                                    ncol = n, nrow = iter, byrow = TRUE)
               }
             } else {
               vibration <- matrix(0, ncol = n, nrow = iter)
@@ -51,10 +47,12 @@ setMethod("create_voter_array",
           })
 
 
+#' @export
 setGeneric("create_role_array", function(voters, iter, ...) {
   standardGeneric("create_role_array")
 })
 
+#' @export
 setMethod("create_role_array",
           signature = signature(voters = "Voters"),
           function(voters, iter, ...) {
@@ -95,14 +93,3 @@ setMethod("create_role_array",
             t(roles)
           }
 )
-
-# Voters <- Voter(c(1,2)) + Veto(c(2,2)) + Voter(c(1,2), "Random") + Voter(c(2,3), "Random")
-# create_role_array(Voters, 5)
-
-
-# Voters + Voter(c(1,2))
-# Voters
-# create_role_array(Voters, 2)
-
-# devtools::load_all("D:/onedrive/github/vetoboxr")
-# Voters + Voter(c(1, 2))

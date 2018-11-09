@@ -3,10 +3,10 @@
 # setClassUnion("data.frameORvector", c("matrix", "vector"))
 
 Position <- setClass("Position",
-  slots = c(
-    position = "vector",
-    dimension = "numeric"
-  )
+                     slots = c(
+                       position = "vector",
+                       dimension = "numeric"
+                     )
 )
 
 setMethod("initialize", "Position", function(.Object, position) {
@@ -35,13 +35,13 @@ is.position <- function(x) {
 setClassUnion("matrixORvector", c("matrix", "vector"))
 
 .Voter <- setClass("Voter",
-  slots = c(
-    role = "matrixORvector"
-  ),
-  prototype = prototype(
-    role = NA_character_
-  ),
-  contains = "Position"
+                   slots = c(
+                     role = "matrixORvector"
+                   ),
+                   prototype = prototype(
+                     role = NA_character_
+                   ),
+                   contains = "Position"
 )
 
 setMethod("initialize", "Voter", function(.Object, position, role) {
@@ -54,8 +54,8 @@ setMethod("initialize", "Voter", function(.Object, position, role) {
 #' @param position
 #' @param role
 #' @export
-Voter <- function(position, role = c("Normal", "Veto", "AS", "Random") {
-  methods::new("Voter", position = position, role = match.arg(role))
+Voter <- function(position, role = "Normal") {
+  methods::new("Voter", position = position, role = role)
 }
 
 #' @param position
@@ -86,7 +86,7 @@ RandomVoter <- function(position) {
 #' @aliases SQ
 #' @rdname SQ-class
 .SQ <- setClass("SQ",
-  contains = "Position"
+                contains = "Position"
 )
 
 
@@ -97,6 +97,3 @@ SQ <- function(position) {
   methods::new("SQ", position = position)
   # .SQ(position = position)
 }
-
-
-

@@ -94,10 +94,10 @@ Vote <- function(
       intermediate_sqs <- matrix(0, ncol = dimension, nrow = ncol(coalitions))
       for (j in seq(ncol(coalitions))) {
         constraints <- c(veto_constraints,
-          lapply(coalitions[, j], function(x) {
-            p_norm(cvxr_sq - voter_position[i, c(x, x + seq(dimension - 1))]) <=
-              p_norm(status_quo[i, ] - voter_position[i, c(x, x + seq(dimension - 1))])
-          }))
+                         lapply(coalitions[, j], function(x) {
+                           p_norm(cvxr_sq - voter_position[i, c(x, x + seq(dimension - 1))]) <=
+                             p_norm(status_quo[i, ] - voter_position[i, c(x, x + seq(dimension - 1))])
+                         }))
         intermediate_sqs[j, ] <- solve_vote(CVXR::Problem(cvxr_obj, constraints))
       }
 
@@ -149,4 +149,3 @@ Vote <- function(
   class(out) <- "Vote"
   out
 }
-
