@@ -42,4 +42,3 @@ get_range_y <- function(vote) {
   }
   c(ymin, ymax)
 }
-

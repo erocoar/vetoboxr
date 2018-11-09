@@ -176,3 +176,4 @@ Vote <- function(
   class(out) <- "Vote"
   out
 }
+
