@@ -3,14 +3,14 @@
 #' @importFrom CVXR get_problem_data Problem Minimize
 #' @importFrom ECOSolveR ECOS_csolve
 #' @export
-solve_vote <- function(prob) {
+solve_vote <- function(prob, dimension) {
   prob_data <- CVXR::get_problem_data(prob, solver = "ECOS")
   ECOSolveR::ECOS_csolve(c = prob_data[["c"]],
                          G = prob_data[["G"]],
                          h = prob_data[["h"]],
                          dims = prob_data[["dims"]],
                          A = prob_data[["A"]],
-                         b = prob_data[["b"]])$x[seq(2)]
+                         b = prob_data[["b"]])$x[seq(dimension)]
 }
 
 #' Vote.
@@ -29,6 +29,8 @@ Vote <- function(
   vibration = NULL,
   iter = 1,
   keep_winset_objects = TRUE,
+  no_random_veto = FALSE,
+  no_random_normal = FALSE,
   ...) {
   function_call <- match.call()
   sq <- eval(formula[[2]])
@@ -37,20 +39,19 @@ Vote <- function(
   # initialize attributes
   voter_names <- labels(terms(formula))
   voter_count <- voters@voter_count
-  voter_roles <- voters@role
+  voter_roles <- create_role_array(voters, iter, no_random_veto, no_random_normal, ...)
   voter_array <- create_voter_array(voters, drift, vibration, iter, ...)
 
   dimension <- sq@dimension
 
   # checks
   stopifnot(dimension == voters@dimension)
-  stopifnot("AS" %in% voter_roles && (sum(voter_roles == "AS") == 1))
+  stopifnot(rowSums(voter_roles == "AS") == rep(1, iter))
 
   # initialize arrays
   status_quo <- matrix(0, ncol = dimension, nrow = iter + 1)
   status_quo[1, ] <- sq@position
 
-  voter_roles <- matrix(voter_roles, ncol = length(voter_roles), nrow = iter, byrow = TRUE)
   voter_position <- voter_array@position
   voter_radii <- matrix(0, ncol = voter_count, nrow = iter)
 
@@ -66,11 +67,11 @@ Vote <- function(
     veto_index_full <- create_index(veto_index, dimension)
     normal_index <- role_idx[which(voter_roles[i, ] == "Normal")]
     normal_index_full <- create_index(normal_index, dimension)
-    ii <<- list(as_index, as_index_full, veto_index, veto_index_full)
 
     # calculate sq radius by voter
     voter_radii[i, ] <- sapply(seq(1, voter_count * dimension, dimension), function(x) {
-      norm(status_quo[i, ] - voter_position[i, c(x, x + seq(dimension - 1))], "2")
+      x_idx <- if (dimension > 1) c(x, x + seq(dimension - 1)) else x
+      norm(status_quo[i, ] - voter_position[i, x_idx], "2")
     })
 
     # check if as position == sq position in which case the outcome is predetermined
@@ -85,8 +86,9 @@ Vote <- function(
     cvxr_obj <- CVXR::Minimize(CVXR::p_norm(voter_position[i, as_index_full] - cvxr_sq))
 
     veto_constraints <- lapply(veto_index, function(x) {
-      p_norm(cvxr_sq - voter_position[i, c(x, x + seq(dimension - 1))]) <=
-        p_norm(status_quo[i, ] - voter_position[i, c(x, x + seq(dimension - 1))])
+      x_idx <- if (dimension > 1) c(x, x + seq(dimension - 1)) else x
+      p_norm(cvxr_sq - voter_position[i, x_idx]) <=
+        p_norm(status_quo[i, ] - voter_position[i, x_idx])
     })
 
     # if there are coalitions, check all and store intermediate sqs
@@ -95,17 +97,18 @@ Vote <- function(
       for (j in seq(ncol(coalitions))) {
         constraints <- c(veto_constraints,
                          lapply(coalitions[, j], function(x) {
-                           p_norm(cvxr_sq - voter_position[i, c(x, x + seq(dimension - 1))]) <=
-                             p_norm(status_quo[i, ] - voter_position[i, c(x, x + seq(dimension - 1))])
+                           x_idx <- if (dimension > 1) c(x, x + seq(dimension - 1)) else x
+                           p_norm(cvxr_sq - voter_position[i, x_idx]) <=
+                             p_norm(status_quo[i, ] - voter_position[i, x_idx])
                          }))
-        intermediate_sqs[j, ] <- solve_vote(CVXR::Problem(cvxr_obj, constraints))
+        intermediate_sqs[j, ] <- solve_vote(CVXR::Problem(cvxr_obj, constraints), dimension)
       }
 
       coalition_distances <- dist(rbind(voter_position[i, as_index_full], intermediate_sqs))
-      coalition_distances <- dists[seq(1, nrow(intermediate_sqs))]
-      status_quo[i + 1, ] <- intermediate_sqs[which.min(dists), ]
+      coalition_distances <- coalition_distances[seq(1, nrow(intermediate_sqs))]
+      status_quo[i + 1, ] <- intermediate_sqs[which.min(coalition_distances), ]
     } else {
-      status_quo[i + 1, ] <- solve_vote(Problem(cvxr_obj, veto_constraints))
+      status_quo[i + 1, ] <- solve_vote(Problem(cvxr_obj, veto_constraints), dimension)
     }
   }
 
@@ -141,10 +144,13 @@ Vote <- function(
     outcome = outcome
   )
 
-  winsets <- get_winset(out, seq(1, iter))
-
-  out$winsets <- winsets
-  out$winset_area <- sapply(winsets, function(x) x@polygons[[1]]@area)
+  if (dimension == 2) {
+    winsets <- get_winset(out, seq(1, iter))
+    if (isTRUE(keep_winset_objects)) {
+      out$winsets <- winsets
+    }
+    out$winset_area <- sapply(winsets, function(x) x@polygons[[1]]@area)
+  }
 
   class(out) <- "Vote"
   out

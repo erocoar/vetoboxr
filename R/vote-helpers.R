@@ -55,17 +55,17 @@ setGeneric("create_role_array", function(voters, iter, ...) {
 #' @export
 setMethod("create_role_array",
           signature = signature(voters = "Voters"),
-          function(voters, iter, ...) {
+          function(voters, iter, no_random_veto, no_random_normal, ...) {
             roles <- voters@role
 
-            if (nrow(roles) == iter) {
-              return(roles)
-            }
+            # if (nrow(roles) == iter && sum(roles == "Random") == 0) {
+            #   return(roles)
+            # }
 
             n <- voters@voter_count * iter
 
             # 1. if there are no random roles and all iters have roles, return
-            if (!any(roles == "random")) {
+            if (!any(roles == "Random")) {
               if (nrow(roles) == iter) {
                 return(roles)
               }
@@ -86,8 +86,13 @@ setMethod("create_role_array",
                 x[as_idx] <- "AS"
                 random_idx <- setdiff(random_idx, as_idx)
               }
-
-              x[random_idx] <- sample(c("Veto", "Normal"), length(random_idx), replace = TRUE, ...)
+              if (isTRUE(no_random_veto)) {
+                x[random_idx] <- "Normal"
+              } else if (isTRUE(no_random_normal)) {
+                x[random_idx] <- "Veto"
+              } else {
+                x[random_idx] <- sample(c("Veto", "Normal"), length(random_idx), replace = TRUE, ...)
+              }
               x
             })
             t(roles)
