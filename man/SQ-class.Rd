@@ -5,13 +5,24 @@
 \alias{SQ-class}
 \alias{.SQ}
 \alias{SQ}
-\title{The SQ class.}
+\alias{SQ}
+\title{S4 class representing the Status Quo.}
+\usage{
+SQ(position)
+}
+\arguments{
+\item{position}{A position vector.}
+}
 \description{
-This class
+S4 class representing the Status Quo.
+
+Constructor for the SQ class.
 }
 \section{Slots}{
 
 \describe{
+\item{\code{position}}{A position vector.}
+
 \item{\code{dimension}}{}
 }}
 

@@ -1,4 +1,9 @@
-# TODO: Lazyeval to get voter names here for `voters`
+#' @include vote-classes.R
+NULL
+
+#' An S4 class representing a group of voters.
+#'
+#' @slot voter_count Number of voters.
 #' @export
 .Voters <- setClass("Voters",
                     contains = "Voter",
@@ -9,6 +14,7 @@
                       voter_count = NA_integer_
                     )
 )
+
 
 setMethod("initialize", "Voters",
           function(.Object, position, dimension, role, voter_count) {

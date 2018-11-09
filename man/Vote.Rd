@@ -5,14 +5,26 @@
 \title{Vote.}
 \usage{
 Vote(formula, drift = NULL, vibration = NULL, iter = 1,
-  keep_winset_objects = TRUE, ...)
+  keep_winset_objects = TRUE, no_random_veto = FALSE,
+  no_random_normal = FALSE, ...)
 }
 \arguments{
 \item{formula}{A formula with SQ on LHS and Voters on RHS.}
 
-\item{iter}{Number of runs.}
+\item{drift}{A vector detailing the drift of each voter in each dimension.}
+
+\item{vibration}{A function generating random noise, must take `n` as first argument.}
+
+\item{iter}{The number of votes to cast.}
+
+\item{keep_winset_objects}{Boolean indicator for whether to keep winset spatial polygons.}
+
+\item{no_random_veto}{If there are `"Random"` voters, never assign them to the `"Veto"` role.}
+
+\item{no_random_normal}{If there are `"Random"` voters, never assign them to the `"Normal"` role.}
+
+\item{...}{}
 }
 \description{
-Executes the spatial model of voting, solving the `Formula`
-constrained optimization problem.
+Executes the spatial model of voting, solving, for each iteration, the constrained optimization problem of minimizing the distance of the Status Quo to the Agenda Setter by the means of a majority vote.
 }

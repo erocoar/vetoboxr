@@ -1,3 +1,10 @@
+#' Retrieve winset spatial polygons from `Vote` objects.
+#'
+#' @param vote An object of class `Vote`.
+#' @param iter A vector of iterations for which to retrieve the winsets.
+#' @param dimension Defaults to `2`.
+#' @param quadsegs Number of linear segments used to approximate voter indifference circles.
+#'
 #' @importFrom sp SpatialPoints
 #' @importFrom rgeos gBuffer gIntersection
 #' @export
@@ -24,7 +31,9 @@ get_winset <- function(vote, iter = 1, dimension = 2, quadsegs = 50) {
     as_idx <- which(vote$voter_roles[i, ] == "AS")
     intersection <- voter_list[[as_idx]]
 
-    for (v in seq(length(voter_list) - 1)) {
+    coalition <- setdiff(vote$coalitions[[i]], as_idx)
+    # for (v in seq(length(voter_list))[-as_idx]) {
+    for (v in coalition) {
       intersection <- rgeos::gIntersection(intersection, voter_list[[v]])
     }
 
