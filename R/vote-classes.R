@@ -117,10 +117,12 @@ RandomVoter <- function(position) {
 .SQ <- setClass(
   "SQ",
   slots = c(
-    drift = "vector"
+    # drift = "vector"
+    drift = "function"
   ),
   prototype = prototype(
-    drift = NA_real_
+    # drift = NA_real_
+    drift = function() 0
   ),
   contains = "Position"
 )
@@ -139,7 +141,7 @@ setMethod("initialize", "SQ", function(.Object, position, drift) {
 #' @export
 SQ <- function(position, drift = NULL) {
   stopifnot(is.null(dim(position)) && is.null(dim(drift)))
-  stopifnot(length(position) == length(drift) || is.null(drift))
+  # stopifnot(length(position) == length(drift) || is.null(drift))
   methods::new("SQ", position = position, drift = drift)
   # .SQ(position = position)
 }
