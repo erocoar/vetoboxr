@@ -1,0 +1,76 @@
+---
+title: "Visualizing the Median Voter Theorem"
+author: "Frederik Tiedemann"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Median Voter Theorem}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(vetoboxr)
+```
+
+The median voter theorem states that a majority rule voting system will always select the outcome most preferred by the median voter. Apart from the usual assumptions underlying spatial voting, the median voter theorem relies on preferences being one-dimensional, meaning there is only one policy issue to vote on.
+
+Let us walk through an example given in Munger. A committee (a small group of decision makers) of three is charged with choosing an entertainment budget for their club. As usual in spatial voting, each of the committee members prefers a budget closest to his or her own preference. The preferences are as follows:
+
+```{r, eval=FALSE}
+Member A - $250
+Member B - $375
+Member C - $1250
+```
+
+Assuming that committee members are free to propose their own ideal points to vote on, if there was just a single vote, the outcome would surely depend on which voter gets to make the first proposal.
+
+To give each voter the possibility of proposing their ideal points, we can create `RandomVoter`s, meaning that, randomly, one of them will take on the role of Agenda Setter in a given vote. We also assume that the status quo at the time of the first vote is $100.
+
+```{r,eval=FALSE}
+A <- RandomVoter(250)
+B <- RandomVoter(375)
+C <- RandomVoter(1250)
+
+sq <- SQ(100)
+```
+
+We can then let any of the voters A, B or C make a proposal (one of them will necessarily become the Agenda Setter) by voting once.
+
+```{r,eval=FALSE}
+one_vote <- Vote(sq ~ A + B + C, no_random_veto = TRUE)
+plot(one_vote)
+```
+
+![](https://i.imgur.com/WJjyreC.png)
+
+It turns out voter C got to make the proposal and the status quo shifted to $650. If we were to vote again, but now given the new status quo, the outcome would likely shift to the left because two voters prefer lower spending than is currently status quo.
+
+```{r,eval=FALSE}
+one_vote <- Vote(SQ(650) ~ A + B + C, no_random_veto = TRUE)
+plot(one_vote)
+```
+
+![](https://i.imgur.com/JbSHy1z.png)
+
+Voter B has now been selected to make the proposal and, with the support of Voter A, manages to shift the status quo to his ideal position, $375. The status quo can now never shift away from this position - if voters A or C would make such proposal, voter B would vote against it for obvious reasons, and either voter A or voter C would vote against it as well because it would move the status quo further from their ideal positions.
+
+We could also add some more voters and let them vote for multiple iterations to inspect the Median Voter Theorem via an animation. We observe that after iteration 8, the status quo is constant.
+
+```{r, eval=FALSE}
+sq <- SQ(4)
+voter1 <- RandomVoter(3)
+voter2 <- RandomVoter(1)
+voter3 <- RandomVoter(7)
+voter4 <- RandomVoter(5)
+voter5 <- RandomVoter(14)
+
+vote <- Vote(sq ~ voter1 + voter2 + voter3 + voter4 + voter5, iter = 10, no_random_veto = TRUE)
+animate(vote, "vote.GIF")
+```
+
+![Median Voter Theorem](https://i.imgur.com/E3osVMp.gif)

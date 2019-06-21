@@ -1,7 +1,15 @@
-#' An S4 class representing a position, used to build Voter and Status Quo classes.
+#' Voter Classes
 #'
+#' Voter classes are used to represent voters having various roles (Normal, Voter, Agenda Setter).
+#'
+#' @name voter_class
+#' @param position A position vector or matrix, either indicating the voter's position once (notwithstanding drift and vibration) or for all voting iterations.
+#' @param role (optional) The role of the voter, one of "Normal", "Veto", "AS" and "Random". Can only be used with the \code{Voter()} constructor function.
+NULL
+
 #' @slot position A position vector.
 #' @slot dimension An integer specifying the dimension, defaults to `length(position)`
+#' @name Position
 Position <- setClass("Position",
                      slots = c(
                        position = "vector",
@@ -10,8 +18,8 @@ Position <- setClass("Position",
 )
 
 
-#' Init function of the Position class.
-#' Assigns the `position` vector and `dimension`, with default `dimension` being `length(position)`.
+#' Assigns the `position` vector and `dimension`, with default \code{dimension} of \code{length(position)}.
+#' @param .Object the Position object.
 #' @param position The position vector.
 #' @rdname Position
 setMethod("initialize", "Position", function(.Object, position) {
@@ -39,15 +47,12 @@ is.position <- function(x) {
   inherits(x, "Position")
 }
 
-
 setClassUnion("matrixORvector", c("matrix", "vector"))
 
-#' An S4 class representing a voter.
-#'
-#' @slot position A position vector.
-#' @slot dimension An integer specifying the dimension, defaults to `length(position)`
-#' @slot role The role of the voter, one of `"AS"`, `"Veto"`, `"Normal"` or `"Random"`.
-#' @name Voter
+#' @slot position A position vector or matrix.
+#' @slot dimension An integer specifying the dimension, defaults to \code{length(position)} if \code{position} is of type \code{vector} or \code{ncol(position)} if \code{position} is of type \code{matrix}.
+#' @slot role The role of the voter, one of "AS", "Veto", "Normal" and "Random".
+#' @name voter_class
 .Voter <- setClass("Voter",
                    slots = c(
                      role = "matrixORvector"
@@ -58,8 +63,13 @@ setClassUnion("matrixORvector", c("matrix", "vector"))
                    contains = "Position"
 )
 
-#' Constructor for \link{Voter-class}.
+#' Constructor for Voter class.
 #'
+#' @param .Object The Voter object.
+#' @param position The position vector.
+#' @param role Role character or vector.
+#'
+#' @importFrom methods callNextMethod
 #' @rdname Voter
 setMethod("initialize", "Voter", function(.Object, position, role) {
   .Object <- callNextMethod(.Object, position)
@@ -67,38 +77,29 @@ setMethod("initialize", "Voter", function(.Object, position, role) {
   .Object
 })
 
-#' Constructor for Voter, by default with role `"Normal"`.
-#'
-#' @param position A position vector.
-#' @param role Defaults to `"Normal"`.
-#' @rdname Voter
+#' @importFrom methods new
+#' @rdname voter_class
 #' @export
 Voter <- function(position, role = "Normal") {
   methods::new("Voter", position = position, role = role)
 }
 
-#' Constructor for Voter with role `"Veto"`.
-#'
-#' @param position A position vector.
-#' @rdname Voter
+#' @importFrom methods new
+#' @rdname voter_class
 #' @export
 Veto <- function(position) {
   methods::new("Voter", position = position, role = "Veto")
 }
 
-#' Constructor for Voter with role `"AS"`.
-#'
-#' @param position A position vector.
-#' @rdname Voter
+#' @importFrom methods new
+#' @rdname voter_class
 #' @export
 AS <- function(position) {
   methods::new("Voter", position = position, role = "AS")
 }
 
-#' Constructor for Voter with role `"Random"`.
-#'
-#' @param position A position vector.
-#' @rdname Voter
+#' @importFrom methods new
+#' @rdname voter_class
 #' @export
 RandomVoter <- function(position) {
   methods::new("Voter", position = position, role = "Random")
@@ -106,24 +107,39 @@ RandomVoter <- function(position) {
 
 #' S4 class representing the Status Quo.
 #'
-#' @slot position A position vector.
-#' @slot dimension
+#' @slot position A position vector of length \code{dimension}.
+#' @slot dimension The dimension of the status quo.
+#' @slot drift A vector indicating the drift (constant change per iteration).
 #'
 #' @name SQ-class
 #' @aliases SQ
 #' @rdname SQ-class
 .SQ <- setClass(
   "SQ",
+  slots = c(
+    drift = "vector"
+  ),
+  prototype = prototype(
+    drift = NA_real_
+  ),
   contains = "Position"
 )
 
+#' Constructor for SQ class.
+setMethod("initialize", "SQ", function(.Object, position, drift) {
+  .Object <- callNextMethod(.Object, position)
+  .Object@drift <- if (is.null(drift)) rep(0, .Object@dimension) else drift
+  .Object
+})
 
-#' Constructor for the SQ class.
-#'
 #' @param position A position vector.
+#' @importFrom methods new
+#'
 #' @rdname SQ-class
 #' @export
-SQ <- function(position) {
-  methods::new("SQ", position = position)
+SQ <- function(position, drift = NULL) {
+  stopifnot(is.null(dim(position)) && is.null(dim(drift)))
+  stopifnot(length(position) == length(drift) || is.null(drift))
+  methods::new("SQ", position = position, drift = drift)
   # .SQ(position = position)
 }

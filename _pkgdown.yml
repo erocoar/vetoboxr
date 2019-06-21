@@ -1,0 +1,28 @@
+reference:
+- title: Voter classes
+  desc: Create voters with specified positions and roles.
+  contents:
+  - '`voter_class`'
+  - '`voters_class`'
+  - '`complex_voters`'
+  - '`vote_helpers`'
+  - '`Position`'
+  - '`initialize,Voter-method`'
+- title: SQ class
+  desc: Create status quo with specified position.
+  contents:
+  - '`SQ-class`'
+- title: Vote
+  desc: Let a Voters object vote a certain number of iterations.
+  contents:
+  - '`Vote`'
+  - '`determine_coalitions`'
+  - '`solve_vote`'
+  - '`get_winset`'
+  - '`vote_df`'
+- title: Plot
+  desc: Plot and animate results of votes.
+  contents:
+  - '`plot_vote`'
+  - '`animate`'
+  - '`geom_half_circle`'

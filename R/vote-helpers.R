@@ -1,11 +1,31 @@
-#' @include voters.R
+#' @include voters-class.R
 NULL
 
+#' Voters Array Generators
+#'
+#' Vote helpers are functions that take as input an object of class \code{Voters} and additional information regarding drift, vibration and the number of iterations to vote on to
+#' - reshape the position matrix and role vector to the correct size, resembling the number of iterations
+#' - add the specified drift to the voter positions and (calculate and) add the vibration
+#' - for voters with random positions, determine the actual positions, per run
+#'
+#' @name vote_helpers
+#'
+#' @param voters A \code{Voters} object.
+#' @param drift A vector or matrix of drift values. If vector, then the drift is constant per iteration and the vector must be of length \code{dimension * voter_count}. If matrix, the drift can vary per dimension and must be of shape \code{iterations} x \code{dimension * voter_count}.
+#' @param vibration A function with first parameter \code{n} that generates random noise.
+#' @param iter The number of iterations.
+#' @param no_random_veto Indicator for whether voters with random position can take on the Veto role.
+#' @param no_random_normal Indicator for whether random voters can take on the Normal role.
+#' @param ... Additional keyword arguments.
+NULL
+
+#' @rdname vote_helpers
 #' @export
 setGeneric("create_voter_array", function(voters, drift, vibration, iter, ...) {
   standardGeneric("create_voter_array")
 })
 
+#' @rdname vote_helpers
 #' @export
 setMethod(
   "create_voter_array",
@@ -21,6 +41,7 @@ setMethod(
                         ncol = n,
                         nrow = iter,
                         byrow = TRUE)
+        drift <- apply(drift, 2, cumsum)
         } else if (is.matrix(drift)) {
           stopifnot(ncol(drift) == n)
           stopifnot(nrow(drift) == iter)
@@ -49,11 +70,13 @@ setMethod(
     voters
     })
 
+#' @rdname vote_helpers
 #' @export
 setGeneric("create_role_array", function(voters, iter, ...) {
   standardGeneric("create_role_array")
 })
 
+#' @rdname vote_helpers
 #' @export
 setMethod(
   "create_role_array",
@@ -103,3 +126,11 @@ setMethod(
     }
   )
 
+# create coal array after the fact
+create_coalition_array <- function(vote) {
+  coalitions <- matrix(FALSE, nrow = vote$iter, ncol = vote$voter_count)
+  for (iter in seq(vote$iter)) {
+    coalitions[iter, vote$coalitions[[iter]]] <- TRUE
+  }
+  coalitions
+}

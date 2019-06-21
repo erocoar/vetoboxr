@@ -2,9 +2,15 @@
 % Please edit documentation in R/determine_coalitions.R
 \name{determine_coalitions}
 \alias{determine_coalitions}
-\title{Determine possible coalitions based on agenda setter, veto players and normal voters.}
+\alias{determine_voters}
+\title{Determine possible coalitions based on agenda setter, veto players and normal voters.
+The agenda setter and veto players must always be part of the coalition.
+\code{determine_voters} determines how many voters, apart from agenda setter and veto players, are required to form a majority coalition.
+\code{determine_coalitions} lists all possible combinations of normal voters to join such coalition.}
 \usage{
-determine_coalitions(as, veto, normal)
+determine_voters(as, veto, normal)
+
+determine_coalitions(normal, more_voters)
 }
 \arguments{
 \item{as}{Agenda Setter Index.}
@@ -12,8 +18,12 @@ determine_coalitions(as, veto, normal)
 \item{veto}{Veto Player Index.}
 
 \item{normal}{Normal Voter Index.}
+
+\item{more_voters}{Number of required normal voters to form majority, as determined by \code{determine_voters}.}
 }
 \description{
-The agenda setter and veto player must always be part of the coalition.
-This function returns possible combinations of AS+Veto+Normal that form a majority.
+Determine possible coalitions based on agenda setter, veto players and normal voters.
+The agenda setter and veto players must always be part of the coalition.
+\code{determine_voters} determines how many voters, apart from agenda setter and veto players, are required to form a majority coalition.
+\code{determine_coalitions} lists all possible combinations of normal voters to join such coalition.
 }

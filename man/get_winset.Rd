@@ -4,7 +4,7 @@
 \alias{get_winset}
 \title{Retrieve winset spatial polygons from `Vote` objects.}
 \usage{
-get_winset(vote, iter = 1, dimension = 2, quadsegs = 50)
+get_winset(vote, iter = 1, dimension = 2, quadsegs = 100)
 }
 \arguments{
 \item{vote}{An object of class `Vote`.}
@@ -16,5 +16,5 @@ get_winset(vote, iter = 1, dimension = 2, quadsegs = 50)
 \item{quadsegs}{Number of linear segments used to approximate voter indifference circles.}
 }
 \description{
-Retrieve winset spatial polygons from `Vote` objects.
+\code{get_winset()} converts the positions of voters at the selected iterations into spatial polygons with the given voter radii, and calculates the intersection of all coalition members' indifference circles, which is called the winset.
 }

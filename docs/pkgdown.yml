@@ -1,0 +1,7 @@
+pandoc: 1.19.2.1
+pkgdown: 1.1.0
+pkgdown_sha: ~
+articles:
+  Median_Voter_Theorem: ../../../../onedrive/github/vetoboxr/vignettes/Median_Voter_Theorem.html
+  Voting_with_Drift_and_Vibration: ../../../../onedrive/github/vetoboxr/vignettes/Voting_with_Drift_and_Vibration.html
+

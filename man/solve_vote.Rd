@@ -2,7 +2,7 @@
 % Please edit documentation in R/voting.R
 \name{solve_vote}
 \alias{solve_vote}
-\title{Solve a voting problem using `ECOSolveR::ECOS_csolve()`.}
+\title{Solve a voting problem using \code{ECOSolver}.}
 \usage{
 solve_vote(prob, dimension)
 }
@@ -12,5 +12,5 @@ solve_vote(prob, dimension)
 \item{dimension}{The dimension of the problem.}
 }
 \description{
-Solve a voting problem using `ECOSolveR::ECOS_csolve()`.
+Solve a voting problem using \code{ECOSolver}.
 }

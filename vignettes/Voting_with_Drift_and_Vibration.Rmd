@@ -1,0 +1,101 @@
+---
+title: "Voting with Drift and Vibration"
+author: "Frederik Tiedemann"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Voting with Drift and Vibration}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(vetoboxr)
+library(tidyverse)
+library(magrittr)
+library(ggridges)
+```
+
+If we were to actually simulate votes over many iterations, chances are that the status quo stabilizes quickly - more so if there are veto players participating in the votes. However, with `vetoboxr` it is possible to dynamically alter the voters` positions over time via vibration and drift. Vibration refers to random fluctuations in voters' spatial positions, whereas drift refers to systemic changes over time (e.g. radicalization of a party). We will take a look at how to specify both.
+
+First we create voters. For running simulations it is convenient to create the `Voters` object directly via a position matrix, rather than formulas. 
+
+```{r, message=FALSE, warning=FALSE}
+library(vetoboxr)
+library(tidyverse)
+library(magrittr)
+library(ggridges)
+```
+
+```{r}
+set.seed(2111)
+players <- Voters(position = rnorm(10, 0, 5), 
+                  dimension = 2, 
+                  role = c("AS", "Veto", "Normal", "Veto", "Normal"))
+sq <- SQ(position = c(0, 0))
+```
+
+The drift can be specified via either a `voter_count * dimension` vector, i.e. a constant change for each voter position that is applied every iteration, or via a `iterations * (voter_count * dimension)` matrix specifying the drift for each position, for each iteration. Let us use a simple drift that will continuously shift the fourth voter further away from all others.
+
+```{r}
+drift <- c(rep(0, 8), 0.1, 0.1)
+```
+
+Vibration is specified either via a matrix of said dimensions or via a function that takes as its first argument the number of values to return. Let us define our own vibration function using a Gamma distribution:
+
+```{r}
+vibration <- function(n) rgamma(n, 0.75, 10)
+```
+
+Then, we can vote as usual.
+
+```{r}
+vote_standard  <- Vote(players, sq, iter = 500)
+vote_drift_vib <- Vote(players, sq, drift = drift, vibration = vibration, iter = 500)
+```
+
+Lastly, we could also let the status quo drift in space.
+
+```{r}
+sq <- SQ(c(0, 0), drift = c(-0.3, 0.2))
+vote_sq_drift <- Vote(players, sq, iter = 500)
+```
+
+For further analysis `Vote` objects can be converted to data frames via `vote_df()`.
+
+```{r}
+vote_sq_drift %>%
+  vote_df() %>%
+  glimpse()
+```
+
+Lastly, let us compare the densities of the total distance travelled by the status quo for multiple drift values.
+
+```{r}
+base_vote <- function(sq) Vote(players, sq, iter = 500)$total_distance[, 1]
+vote_grid <- expand.grid(seq(0, 6, 3), seq(0, 6, 3))
+
+votes <- vote_grid %>%
+  pmap(~ list("sq_dist" = base_vote(SQ(c(0, 0), c(..1, ..2)))))
+```
+
+```{r, message=FALSE, warning=FALSE}
+vote_grid %<>%
+  mutate(dist = pmap_dbl(., ~ norm(-c(..1, ..2), "2")))
+
+vote_outcomes <- votes %>% 
+  bind_rows() %>%
+  mutate(distance = rep(vote_grid$dist, each = 500)) 
+  
+vote_outcomes$sq_dist %<>% add(1) 
+
+ggplot(vote_outcomes) +
+  geom_density_ridges(aes(x = sq_dist, y = factor(distance))) +
+  scale_x_log10(limits = c(1, 2))
+
+```
+

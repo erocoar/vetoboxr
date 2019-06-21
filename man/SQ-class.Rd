@@ -5,24 +5,23 @@
 \alias{SQ-class}
 \alias{.SQ}
 \alias{SQ}
-\alias{SQ}
 \title{S4 class representing the Status Quo.}
 \usage{
-SQ(position)
+SQ(position, drift = NULL)
 }
 \arguments{
 \item{position}{A position vector.}
 }
 \description{
 S4 class representing the Status Quo.
-
-Constructor for the SQ class.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{position}}{A position vector.}
+\item{\code{position}}{A position vector of length \code{dimension}.}
 
-\item{\code{dimension}}{}
+\item{\code{dimension}}{The dimension of the status quo.}
+
+\item{\code{drift}}{A vector indicating the drift (constant change per iteration).}
 }}
 

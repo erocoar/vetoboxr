@@ -1,5 +1,11 @@
-create_index <- function(idx, dimension) {
-  if (dimension > 1) sort(c(idx, idx + seq(dimension - 1))) else idx
+create_index <- function(idx, dimension, sort = TRUE) {
+  if (dimension > 1) {
+    idx <- c(idx, idx + seq(dimension - 1))
+    if (isTRUE(sort)) {
+      idx <- sort(idx)
+    }
+  }
+  idx
 }
 
 get_range_x <- function(vote) {
@@ -42,3 +48,7 @@ get_range_y <- function(vote) {
   }
   c(ymin, ymax)
 }
+
+seq_v <- function(x) seq(nrow(x))
+
+seq_h <- function(x) seq(ncol(x))
