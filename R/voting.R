@@ -114,7 +114,9 @@ Vote.Voters <- function(
 
   for (i in seq(1, iter)) {
     # 0. update sq-drift
-    status_quo[i, ] <- status_quo[i, ] + status_quo_drift
+    # TODO implement good SQ class checks
+    # TODO sq_drift function argument by default n / dim?
+    status_quo[i, ] <- status_quo[i, ] + status_quo_drift()#status_quo_drift
 
     # 1. create indices for each role
     as_index_orig     <- which(voter_roles[i, ] == "AS")
