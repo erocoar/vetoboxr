@@ -1,21 +1,37 @@
 Package: vetoboxr
-Title: What the Package Does (one line, title case)
+Title: Spatial Voting in R.
 Version: 0.0.0.9000
 Authors@R: person("Frederik", "Tiedemann", email = "fj.tiedemann@googlemail.com", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
+URL: https://github.com/erocoar/vetoboxr
 Depends: R (>= 3.5.0)
-Imports: CVXR,
+Imports: animation,
+	 CVXR,
 	 ECOSolveR,
-	 methods
+	 methods,
+	 ggplot2,
+	 ggpol,
+	 rgeos,
+	 sp
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
-Collate:
-	'determine_coalitions.R'
-	'plot-vote.R'
-	'vote-classes.R'
-	'vote-complex.R'
-	'vote-helpers.R'
-	'voting.R'
-	'winset.R'
+RoxygenNote: 6.1.1
+Collate: 
+    'vote-classes.R'
+    'voters-class.R'
+    'animate.R'
+    'checks.R'
+    'determine_coalitions.R'
+    'geom_half_circle.R'
+    'voting.R'
+    'plot-vote.R'
+    'stat-half-circle.R'
+    'utilities.R'
+    'vote-complex.R'
+    'vote-df.R'
+    'vote-helpers.R'
+    'winset.R'
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr

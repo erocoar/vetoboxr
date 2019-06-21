@@ -2,17 +2,45 @@
 % Please edit documentation in R/voting.R
 \name{Vote}
 \alias{Vote}
+\alias{Vote.formula}
+\alias{Vote.Voters}
 \title{Vote.}
 \usage{
-Vote(formula, drift = NULL, vibration = NULL, iter = 1,
-  keep_winset_objects = TRUE, ...)
+Vote(x, ...)
+
+\method{Vote}{formula}(formula, drift = NULL, vibration = NULL,
+  iter = 1, keep_winset_objects = TRUE, no_random_veto = FALSE,
+  no_random_normal = FALSE, winset_quadsegs = 100, ...)
+
+\method{Vote}{Voters}(voters, sq, drift = NULL, vibration = NULL,
+  iter = 1, keep_winset_objects = TRUE, no_random_veto = FALSE,
+  no_random_normal = FALSE, winset_quadsegs = 100, ...)
 }
 \arguments{
+\item{x}{()}
+
+\item{...}{Additional keyword arguments.}
+
 \item{formula}{A formula with SQ on LHS and Voters on RHS.}
 
-\item{iter}{Number of runs.}
+\item{drift}{A vector detailing the drift of each voter in each dimension.}
+
+\item{vibration}{A function generating random noise, must take `n` as first argument.}
+
+\item{iter}{The number of votes to cast.}
+
+\item{keep_winset_objects}{Boolean indicator for whether to keep winset spatial polygons.}
+
+\item{no_random_veto}{If there are `"Random"` voters, never assign them to the `"Veto"` role.}
+
+\item{no_random_normal}{If there are `"Random"` voters, never assign them to the `"Normal"` role.}
+
+\item{winset_quadsegs}{Number of linear segments used to approximate voter indifference circles.}
+
+\item{voters}{(required if no formula principal argument is given.) An object of class `"Voters"`.}
+
+\item{sq}{(required if no formula principal argument is given.) An object of class `"SQ"`.}
 }
 \description{
-Executes the spatial model of voting, solving the `Formula`
-constrained optimization problem.
+Executes the spatial model of voting, solving, for each iteration, the constrained optimization problem of minimizing the distance of the Status Quo to the Agenda Setter by the means of a majority vote.
 }

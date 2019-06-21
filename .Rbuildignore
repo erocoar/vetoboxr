@@ -2,6 +2,7 @@
 ^\.Rproj\.user$
 ^\.travis\.yml$
 ^/\.gitattributes$
+^_pkgdown\.yml$
 ^cran-comments.md$
 ^NEWS$
 ^README\.Rmd$
