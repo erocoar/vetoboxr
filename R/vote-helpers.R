@@ -92,7 +92,7 @@ setMethod(
     roles <- voters@role
     n <- voters@voter_count * iter
     # 1. if not all iters have roles, reshape
-    if (is.vector(roles)) {
+    if (nrow(roles) == 1 && iter > 1) {
       roles <- matrix(roles, nrow = iter, ncol = voters@voter_count, byrow = TRUE)
     }
     # 2. if there are no random voters, return
