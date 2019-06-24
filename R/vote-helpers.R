@@ -117,7 +117,7 @@ setMethod(
       
       # if no limit on veto players specified, sample one from all possibilities
       if (is.null(random_veto_count)) {
-        random_veto_count <- sample(c(0, seq_along(random_idx), 1))
+        random_veto_count <- sample(c(0, seq_along(random_idx)), 1)
       }
       # sample random_veto_count veto players
       if (random_veto_count >= 1) {
