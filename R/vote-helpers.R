@@ -34,6 +34,8 @@ setMethod(
     ),
   function(voters, drift, vibration, iter, ...) {
     n <- voters@voter_count * voters@dimension
+    
+    # 1. create cumulative matrix of drift values to add to the positions
     if (!is.null(drift)) {
       if (is.vector(drift)) {
         stopifnot(length(drift) == n)
@@ -49,27 +51,39 @@ setMethod(
       } else {
         drift <- matrix(0, ncol = n, nrow = iter)
       }
+    
+    # 2. create vibration matrix
     if (!is.null(vibration)) {
       if (is.matrix(vibration)) {
         stopifnot(ncol(vibration) == n)
         stopifnot(nrow(vibration) == iter)
         } else if (is.function(vibration)) {
-          vibration <- matrix(vibration(prod(n * iter), ...),
+          vibration <- matrix(vibration(prod(n * iter), ...), # TODO check prod
                               ncol = n, nrow = iter, byrow = TRUE)
         }
       } else {
         vibration <- matrix(0, ncol = n, nrow = iter)
       }
+    
+    # 3. if only start position given, expand to matrix
     if (is.vector(voters@position)) {
       position <- matrix(rep(voters@position, iter),
                          ncol = n, nrow = iter, byrow = TRUE)
     } else {
       position <- voters@position
     }
+    
+    # 4. if Dim = 1, add 0 to 2nd dim
+    if (voters@dimension == 1) {
+      position2 <- matrix(0, nrow = iter, ncol = n)
+      colnames(position) <- paste0("Voter ", seq(voters@voter_count), " Dim 1")
+      colnames(position2) <- paste0("Voter ", seq(voters@voter_count), " Dim 2")
+      position <- cbind(position, position2)
+      pp <<- position
+      position <- position[, sort(colnames(position))]
+    }
+    
     voter_names <- names(voters@position)
-    a1 <<- position
-    a2 <<- drift
-    a3 <<- vibration
     voters@position <- position + drift + vibration
     colnames(voters@position) <- voter_names
     rownames(voters@position) <- seq(iter)

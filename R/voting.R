@@ -85,6 +85,9 @@ Vote.Voters <- function(
 
   # initialize attributes
   # voter_names <- labels(terms(formula))
+  if (voters@dimension) == 1 {
+    voters@dimension == 2
+  }
   voter_count <- voters@voter_count
   voter_roles <- create_role_array(voters, iter, random_veto_count, ...)
   voter_array <- create_voter_array(voters, drift, vibration, iter, ...)
@@ -150,10 +153,6 @@ Vote.Voters <- function(
 
     # 5. initialize CVXR SQ, vote objective and veto constraints
     cvxr_sq <- CVXR::Variable(dimension, 1)
-    # a1 <<- as_index_full
-    # a2 <<- i
-    # a3 <<- voter_position
-    # a4 <<- cvxr_sq
     cvxr_obj <- CVXR::Minimize(CVXR::p_norm(voter_position[i, as_index_full] - cvxr_sq))
 
     veto_constraints <- lapply(veto_index_x, function(x) {
