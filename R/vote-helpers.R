@@ -90,25 +90,15 @@ setMethod(
   signature = signature(voters = "Voters"),
   function(voters, iter, no_random_veto, no_random_normal, ...) {
     roles <- voters@role
-
-    # if (nrow(roles) == iter && sum(roles == "Random") == 0) {
-    #   return(roles)
-    # }
-
     n <- voters@voter_count * iter
-
-    # 1. if there are no random roles and all iters have roles, return
-    if (!any(roles == "Random")) {
-      if (nrow(roles) == iter) {
-        return(roles)
-      }
-    }
-
-    # 2. if not all iters have roles, reshape
-    if (nrow(roles) != iter) {
+    # 1. if not all iters have roles, reshape
+    if (is.vector(roles)) {
       roles <- matrix(roles, nrow = iter, ncol = voters@voter_count, byrow = TRUE)
     }
-
+    # 2. if there are no random voters, return
+    if (!any(roles == "Random")) {
+      return(roles)
+    }
     # 3. per row, check for random AS or other random roles.
     roles <- apply(roles, 1, function(x) {
       random_idx <- which(x == "Random")
