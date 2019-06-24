@@ -29,8 +29,7 @@ solve_vote <- function(prob, dimension) {
 #' @param vibration A function generating random noise, must take `n` as first argument.
 #' @param iter The number of votes to cast.
 #' @param keep_winset_objects Boolean indicator for whether to keep winset spatial polygons.
-#' @param no_random_veto If there are `"Random"` voters, never assign them to the `"Veto"` role.
-#' @param no_random_normal If there are `"Random"` voters, never assign them to the `"Normal"` role.
+#' @param random_veto_count If there are `"Random"` voters, how many are assigned `"Veto"` role per round.
 #' @param winset_quadsegs Number of linear segments used to approximate voter indifference circles.
 #' @param ... Additional keyword arguments.
 #'
@@ -54,8 +53,7 @@ Vote.formula <- function(
   vibration = NULL,
   iter = 1,
   keep_winset_objects = TRUE,
-  no_random_veto = FALSE,
-  no_random_normal = FALSE,
+  random_veto_count = NULL,
   winset_quadsegs = 100,
   ...
 ) {
@@ -65,7 +63,7 @@ Vote.formula <- function(
 
   # voter_names <- labels(terms(formula))
   Vote(voters, sq, drift, vibration, iter, keep_winset_objects,
-       no_random_veto, no_random_normal, winset_quadsegs, ...)
+       random_veto_count, winset_quadsegs, ...)
 }
 
 #' @rdname Vote
@@ -77,8 +75,7 @@ Vote.Voters <- function(
   vibration = NULL,
   iter = 1,
   keep_winset_objects = TRUE,
-  no_random_veto = FALSE,
-  no_random_normal = FALSE,
+  random_veto_count = FALSE,
   winset_quadsegs = 100,
   ...) {
 
@@ -89,7 +86,7 @@ Vote.Voters <- function(
   # initialize attributes
   # voter_names <- labels(terms(formula))
   voter_count <- voters@voter_count
-  voter_roles <- create_role_array(voters, iter, no_random_veto, no_random_normal, ...)
+  voter_roles <- create_role_array(voters, iter, random_veto_count, ...)
   voter_array <- create_voter_array(voters, drift, vibration, iter, ...)
 
   voter_coalitions <- vector("list", iter)

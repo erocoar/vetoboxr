@@ -88,7 +88,7 @@ setMethod(
   "create_role_array",
   # TODO don't create role array if it already is passed in voters object.. ? 
   signature = signature(voters = "Voters"),
-  function(voters, iter, no_random_veto, no_random_normal, ...) {
+  function(voters, iter, random_veto_count, ...) {
     roles <- voters@role
     n <- voters@voter_count * iter
     # 1. if not all iters have roles, reshape
@@ -103,23 +103,47 @@ setMethod(
     roles <- apply(roles, 1, function(x) {
       random_idx <- which(x == "Random")
       nonrandom_idx <- setdiff(seq_along(x), random_idx)
-
+      
+      # when AS is not in row, one random voter must take on AS role
       if (!"AS" %in% x) {
-        as_idx <- sample(random_idx, 1)
-        x[as_idx] <- "AS"
+        as_idx     <- sample(random_idx, 1)
+        x[as_idx]  <- "AS"
         random_idx <- setdiff(random_idx, as_idx)
       }
-      if (isTRUE(no_random_veto)) {
-        x[random_idx] <- "Normal"
-        } else if (isTRUE(no_random_normal)) {
-          x[random_idx] <- "Veto"
-          } else {
-            x[random_idx] <- sample(c("Veto", "Normal"),
-                                    length(random_idx), replace = TRUE, ...)
-            }
+      
+      # if no limit on veto players specified, sample one from all possibilities
+      if (is.null(random_veto_count)) {
+        random_veto_count <- sample(c(0, seq_along(random_idx), 1))
+      }
+      # sample random_veto_count veto players
+      if (random_veto_count >= 1) {
+        veto_idx   <- sample(random_idx, random_veto_count)
+        x[veto_idx] <- "Veto"
+        random_idx <- setdiff(random_idx, veto_idx)
+      }
+      
+      # rest of the voters must be normal 
+      x[random_idx] <- "Normal"
       x
-      })
+    })
     t(roles)
+
+      # if (!"AS" %in% x) {
+      #   as_idx <- sample(random_idx, 1)
+      #   x[as_idx] <- "AS"
+      #   random_idx <- setdiff(random_idx, as_idx)
+      # }
+      # if (isTRUE(no_random_veto)) {
+      #   x[random_idx] <- "Normal"
+      #   } else if (isTRUE(no_random_normal)) {
+      #     x[random_idx] <- "Veto"
+      #     } else {
+      #       x[random_idx] <- sample(c("Veto", "Normal"),
+      #                               length(random_idx), replace = TRUE, ...)
+      #       }
+      # x
+      # })
+    # t(roles)
     }
   )
 
