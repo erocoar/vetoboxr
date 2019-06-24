@@ -60,10 +60,16 @@ setMethod(
       } else {
         vibration <- matrix(0, ncol = n, nrow = iter)
       }
-
-    position <- matrix(rep(voters@position, iter),
-                       ncol = n, nrow = iter, byrow = TRUE)
+    if (is.vector(voters@position)) {
+      position <- matrix(rep(voters@position, iter),
+                         ncol = n, nrow = iter, byrow = TRUE)
+    } else {
+      position <- voters@position
+    }
     voter_names <- names(voters@position)
+    a1 <<- position
+    a2 <<- drift
+    a3 <<- vibration
     voters@position <- position + drift + vibration
     colnames(voters@position) <- voter_names
     rownames(voters@position) <- seq(iter)
@@ -80,6 +86,7 @@ setGeneric("create_role_array", function(voters, iter, ...) {
 #' @export
 setMethod(
   "create_role_array",
+  # TODO don't create role array if it already is passed in voters object.. ? 
   signature = signature(voters = "Voters"),
   function(voters, iter, no_random_veto, no_random_normal, ...) {
     roles <- voters@role

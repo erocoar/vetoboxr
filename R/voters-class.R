@@ -50,11 +50,11 @@ setMethod(
 #' @export
 Voters <- function(position, dimension, role) {
   role <- rbind(role)
-  if (length(position) %% dimension != 0 || !is.vector(position)) {
+  if (length(position) %% dimension != 0 && ncol(position) %% dimension != 0) {#!is.vector(position)) {
     stop("Voter positions do not match dimension.")
   } else if (ncol(role) != length(position) / dimension) {
     stop("Voter roles do not match voter count.")
-  } else if (!all(role %in% c("AS", "Veto", "Normal"))) {
+  } else if (!all(unlist(role) %in% c("AS", "Veto", "Normal"))) {
     stop("Voter roles must be one of AS, Veto and Normal.")
   }
   methods::new("Voters", position = position, dimension = dimension,
