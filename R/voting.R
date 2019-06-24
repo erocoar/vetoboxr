@@ -85,9 +85,6 @@ Vote.Voters <- function(
 
   # initialize attributes
   # voter_names <- labels(terms(formula))
-  if (voters@dimension == 1) {
-    voters@dimension == 2
-  }
   voter_count <- voters@voter_count
   voter_roles <- create_role_array(voters, iter, random_veto_count, ...)
   voter_array <- create_voter_array(voters, drift, vibration, iter, ...)

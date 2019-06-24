@@ -73,16 +73,6 @@ setMethod(
       position <- voters@position
     }
     
-    # 4. if Dim = 1, add 0 to 2nd dim
-    if (voters@dimension == 1) {
-      position2 <- matrix(0, nrow = iter, ncol = n)
-      colnames(position) <- paste0("Voter ", seq(voters@voter_count), " Dim 1")
-      colnames(position2) <- paste0("Voter ", seq(voters@voter_count), " Dim 2")
-      position <- cbind(position, position2)
-      pp <<- position
-      position <- position[, sort(colnames(position))]
-    }
-    
     voter_names <- names(voters@position)
     voters@position <- position + drift + vibration
     colnames(voters@position) <- voter_names
