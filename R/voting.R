@@ -85,7 +85,7 @@ Vote.Voters <- function(
 
   # initialize attributes
   # voter_names <- labels(terms(formula))
-  if (voters@dimension) == 1 {
+  if (voters@dimension == 1) {
     voters@dimension == 2
   }
   voter_count <- voters@voter_count
