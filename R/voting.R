@@ -151,7 +151,7 @@ Vote.Voters <- function(
 
     # 5. initialize CVXR SQ, vote objective and veto constraints
     cvxr_sq <- CVXR::Variable(dimension, 1)
-    cvxr_obj <- CVXR::Minimize(CVXR::p_norm(voter_position[i, as_index_full] - cvxr_sq))
+    cvxr_obj <- CVXR::Minimize(CVXR::p_norm(as.vector(voter_position[i, as_index_full]) - cvxr_sq)) # TODO : no column names for voter_position: as.vector unncessary
 
     veto_constraints <- lapply(veto_index_x, function(x) {
       full_idx <- create_index(x, dimension, sort = FALSE)
