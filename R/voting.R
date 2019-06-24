@@ -155,8 +155,8 @@ Vote.Voters <- function(
 
     veto_constraints <- lapply(veto_index_x, function(x) {
       full_idx <- create_index(x, dimension, sort = FALSE)
-      p_norm(cvxr_sq - voter_position[i, full_idx]) <=
-        p_norm(status_quo[i, ] - voter_position[i, full_idx])
+      p_norm(cvxr_sq - as.vector(voter_position[i, full_idx])) <=
+        p_norm(status_quo[i, ] - as.vector(voter_position[i, full_idx]))
     })
 
     # 6. check how many normal voters are needed for majority
@@ -165,7 +165,7 @@ Vote.Voters <- function(
     if (more_voters > 0) {
       # 7. if coalition required, check which Normal have winset with AS
       viable_normal <- sapply(seq_along(normal_index_orig), function(x) {
-        check_viability(voter_position[i, c(as_index_full, normal_index_x[x] + c(0, 1))],
+        check_viability(as.vector(voter_position[i, c(as_index_full, normal_index_x[x] + c(0, 1))]),
                         voter_radii[i, c(as_index_orig, normal_index_orig[x])])
       })
 
