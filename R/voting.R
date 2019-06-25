@@ -101,7 +101,7 @@ Vote.Voters <- function(
 
   # initialize arrays
   status_quo <- matrix(Inf, ncol = dimension, nrow = iter + 1)
-  outcome    <- status_quo
+  outcome    <- matrix(Inf, ncol = dimension, nrow = iter)
   status_quo[1, ] <- sq@position
 
   voter_position <- voter_array@position
