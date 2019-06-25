@@ -73,7 +73,7 @@ setMethod(
       position <- voters@position
     }
     
-    voter_names <- names(voters@position)
+    voter_names <- if (is.vector(voters@position)) names(voters@position) else colnames(voters@position)
     voters@position <- position + drift + vibration
     colnames(voters@position) <- voter_names
     rownames(voters@position) <- seq(iter)

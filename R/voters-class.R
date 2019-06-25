@@ -52,7 +52,7 @@ Voters <- function(position, dimension, role) {
   role <- rbind(role)
   if (length(position) %% dimension != 0 && ncol(position) %% dimension != 0) {#!is.vector(position)) {
     stop("Voter positions do not match dimension.")
-  } else if (ncol(role) != length(position) / dimension) {
+  } else if (ncol(role) != (if (is.vector(position)) length(position) else ncol(position)) / dimension) {
     stop("Voter roles do not match voter count.")
   } else if (!all(unlist(role) %in% c("AS", "Veto", "Normal"))) {
     stop("Voter roles must be one of AS, Veto and Normal.")
