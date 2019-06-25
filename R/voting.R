@@ -262,7 +262,7 @@ Vote.Voters <- function(
     status_quo = status_quo,
     outcome = outcome
   )
-
+  oo <<- out
   if (dimension == 2) {
     winsets <- get_winset(out, seq(1, iter), quadsegs = winset_quadsegs)
     if (isTRUE(keep_winset_objects)) {

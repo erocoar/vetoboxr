@@ -29,6 +29,8 @@ get_winset <- function(vote, iter = 1, dimension = 2, quadsegs = 100) {
   lapply(seq_along(iter), function(i) {
     if (is.null(vote$coalitions[[iter[i]]])) {
       NULL
+    } else if isTRUE(all.equal(unname(vote$status_quo[iter[i], ]), unname(vote$outcome[iter[i], ]))) {
+      NULL
     } else {
       voter_list <- lapply(seq(idx[i], idx[i] + voter_length - 1), function(j) {
         rgeos::gBuffer(voters[j, ], width = norm(voters[j, ]@coords - status_quo[i, ]@coords, "2"),
