@@ -101,6 +101,7 @@ Vote.Voters <- function(
 
   # initialize arrays
   status_quo <- matrix(Inf, ncol = dimension, nrow = iter + 1)
+  outcome    <- status_quo
   status_quo[1, ] <- sq@position
 
   voter_position <- voter_array@position
@@ -114,6 +115,9 @@ Vote.Voters <- function(
     # 0. update sq-drift
     # TODO implement good SQ class checks
     # TODO sq_drift function argument by default n / dim?
+    if (i > 1) {
+      outcome[i - 1, ] <- status_quo[i, ]
+    }
     status_quo[i, ] <- status_quo[i, ] + status_quo_drift()#status_quo_drift
 
     # 1. create indices for each role
@@ -222,7 +226,8 @@ Vote.Voters <- function(
   }
 
   # 13. prepare result data
-  outcome <- status_quo[-1, , drop = FALSE]
+  # outcome <- status_quo[-1, , drop = FALSE]
+  outcome[nrow(outcome), ] <- status_quo[nrow(status_quo), ]
   colnames(outcome) <- paste0("Outcome ", seq(1, dimension))
   status_quo <- status_quo[-nrow(status_quo), , drop = FALSE]
   colnames(status_quo) <- paste0("Status Quo ", seq(1, dimension))
