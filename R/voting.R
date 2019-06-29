@@ -111,7 +111,7 @@ Vote.Voters <- function(
   x_idx <-  seq(1, voter_count * dimension, dimension)
 
   for (i in seq(1, iter)) {
-    cat(i, "\n")
+    # cat(i, "\n")
     # 0. update sq-drift
     # TODO implement good SQ class checks
     # TODO sq_drift function argument by default n / dim?
@@ -267,7 +267,7 @@ Vote.Voters <- function(
     status_quo = status_quo,
     outcome = outcome
   )
-  oo <<- out
+  # oo <<- out
   if (dimension == 2) {
     winsets <- get_winset(out, seq(1, iter), quadsegs = winset_quadsegs)
     if (isTRUE(keep_winset_objects)) {

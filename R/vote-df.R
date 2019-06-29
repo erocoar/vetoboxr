@@ -20,5 +20,8 @@ vote_df <- function(vote) {
                                  vote$total_distance, vote$total_payoff,
                                  vote$status_quo, vote$outcome)
   voter_data$`Dimension` <- vote$dimension
+  if ("winset_area" %in% names(vote)) {
+    voter_data$winset_area <- vote$winset_area
+  }
   voter_data
 }
