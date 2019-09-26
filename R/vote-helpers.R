@@ -35,7 +35,7 @@ setMethod(
   function(voters, drift, vibration, iter, ...) {
     n <- voters@voter_count * voters@dimension
     
-    # 1. create cumulative matrix of drift values to add to the positions
+    # 1. create cumulative matrix of drift or 0 values to add to the positions
     if (!is.null(drift)) {
       if (is.vector(drift)) {
         stopifnot(length(drift) == n)
@@ -52,7 +52,7 @@ setMethod(
         drift <- matrix(0, ncol = n, nrow = iter)
       }
     
-    # 2. create vibration matrix
+    # 2. create vibration or 0 matrix to add to the positions
     if (!is.null(vibration)) {
       if (is.matrix(vibration)) {
         stopifnot(ncol(vibration) == n)
@@ -65,7 +65,7 @@ setMethod(
         vibration <- matrix(0, ncol = n, nrow = iter)
       }
     
-    # 3. if only start position given, expand to matrix
+    # 3. if only start positions of voters are given, replicate for each run
     if (is.vector(voters@position)) {
       position <- matrix(rep(voters@position, iter),
                          ncol = n, nrow = iter, byrow = TRUE)
@@ -93,32 +93,37 @@ setMethod(
   # TODO don't create role array if it already is passed in voters object.. ? 
   signature = signature(voters = "Voters"),
   function(voters, iter, random_veto_count, ...) {
+    
     roles <- voters@role
     n <- voters@voter_count * iter
+    
     # 1. if not all iters have roles, reshape
     if (nrow(roles) == 1 && iter > 1) {
       roles <- matrix(roles, nrow = iter, ncol = voters@voter_count, byrow = TRUE)
     }
-    # 2. if there are no random voters, return
+    
+    # 2. if there are no random voters, return the given role matrix
     if (!any(roles == "Random")) {
       return(roles)
     }
+    
     # 3. per row, check for random AS or other random roles.
     roles <- apply(roles, 1, function(x) {
       random_idx <- which(x == "Random")
       nonrandom_idx <- setdiff(seq_along(x), random_idx)
       
-      # when AS is not in row, one random voter must take on AS role
+      # when AS is not in row, one random voter must take on AS role...
       if (!"AS" %in% x) {
         as_idx     <- sample(random_idx, 1)
         x[as_idx]  <- "AS"
         random_idx <- setdiff(random_idx, as_idx)
       }
       
-      # if no limit on veto players specified, sample one from all possibilities
+      # if no limit on veto players specified, sample number from 1:(votercount-1)
       if (is.null(random_veto_count)) {
         random_veto_count <- sample(c(0, seq_along(random_idx)), 1)
       }
+      
       # sample random_veto_count veto players
       if (random_veto_count >= 1) {
         veto_idx   <- sample(random_idx, random_veto_count)
@@ -126,28 +131,11 @@ setMethod(
         random_idx <- setdiff(random_idx, veto_idx)
       }
       
-      # rest of the voters must be normal 
+      # rest of the voters must have normal role
       x[random_idx] <- "Normal"
       x
     })
     t(roles)
-
-      # if (!"AS" %in% x) {
-      #   as_idx <- sample(random_idx, 1)
-      #   x[as_idx] <- "AS"
-      #   random_idx <- setdiff(random_idx, as_idx)
-      # }
-      # if (isTRUE(no_random_veto)) {
-      #   x[random_idx] <- "Normal"
-      #   } else if (isTRUE(no_random_normal)) {
-      #     x[random_idx] <- "Veto"
-      #     } else {
-      #       x[random_idx] <- sample(c("Veto", "Normal"),
-      #                               length(random_idx), replace = TRUE, ...)
-      #       }
-      # x
-      # })
-    # t(roles)
     }
   )
 
