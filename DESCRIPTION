@@ -1,8 +1,8 @@
 Package: vetoboxr
-Title: Spatial Voting in R.
+Title: Spatial Voting in R
 Version: 0.0.0.9000
 Authors@R: person("Frederik", "Tiedemann", email = "fj.tiedemann@googlemail.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Description: Simulate Downs' spatial model of voting.
 URL: https://github.com/erocoar/vetoboxr
 Depends: R (>= 3.5.0)
 Imports: animation,
